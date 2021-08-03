@@ -327,10 +327,11 @@ def einsum(*args):
 
 if TYPE_CHECKING:
     # The JIT doesn't understand Union, so only add type annotation for mypy
-    def meshgrid(*tensors: Union[Tensor, List[Tensor]]) -> Tuple[Tensor, ...]:
-        return _meshgrid(*tensors)
+    def meshgrid(*tensors: Union[Tensor, List[Tensor]],
+                 indexing: Optional[str] = None) -> Tuple[Tensor, ...]:
+        return _meshgrid(*tensors, indexing=indexing)
 else:
-    def meshgrid(*tensors):
+    def meshgrid(*tensors, indexing: Optional[str] = None) -> Tuple[Tensor, ...]:
         r"""Take :math:`N` tensors, each of which can be either scalar or 1-dimensional
         vector, and create :math:`N` N-dimensional grids, where the :math:`i` :sup:`th` grid is defined by
         expanding the :math:`i` :sup:`th` input over dimensions defined by other inputs.
@@ -358,16 +359,16 @@ else:
                     [4, 5, 6],
                     [4, 5, 6]])
         """
-        return _meshgrid(*tensors)
+        return _meshgrid(*tensors, indexing=indexing)
 
 
-def _meshgrid(*tensors):
+def _meshgrid(*tensors, indexing: Optional[str]):
     if has_torch_function(tensors):
-        return handle_torch_function(meshgrid, tensors, *tensors)
+        return handle_torch_function(meshgrid, tensors, *tensors, indexing=indexing)
     if len(tensors) == 1 and isinstance(tensors[0], (list, tuple)):
         # the old interface of passing the operands as one list argument
         tensors = tensors[0]  # type: ignore[assignment]
-    return _VF.meshgrid(tensors)  # type: ignore[attr-defined]
+    return _VF.meshgrid(tensors, indexing=indexing)  # type: ignore[attr-defined]
 
 
 def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
