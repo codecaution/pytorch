@@ -63,9 +63,7 @@ std::map<at::ScalarType, ncclDataType_t> ncclDataType = {
     {at::kLong, ncclInt64},
     {at::kHalf, ncclHalf},
     {at::kBool, ncclUint8},
-#if defined(__HIP_PLATFORM_HCC__) && HIP_VERSION >= 301
     {at::kBFloat16, ncclBfloat16},
-#endif
 };
 
 // Helper function that gets the data type and issues error if not supported
