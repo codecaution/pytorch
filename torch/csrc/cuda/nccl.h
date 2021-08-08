@@ -57,7 +57,8 @@ enum class ncclDataType {
     NumTypes   = 10
 #else
     NumTypes   = 9
-#endif            };
+#endif
+    };
 
 
 
